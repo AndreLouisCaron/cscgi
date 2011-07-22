@@ -168,7 +168,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\main.cpp"
+			RelativePath=".\demo.cpp"
 			>
 		</File>
 		<File
