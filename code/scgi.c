@@ -5,7 +5,7 @@
 ** (see "LICENSE.txt"). If not, terms of the license are available online at
 ** "http://www.opensource.org/licenses/mit". */
 
-#include "cscgi.h"
+#include "scgi.h"
 
 static const char * scgi_error_messages[] =
 {

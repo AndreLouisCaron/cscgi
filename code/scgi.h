@@ -14,8 +14,7 @@
  * @brief Parser for Simple Common Gateway Interface (SCGI) requests.
  */
 
-#include "cnetstring.h"
-
+#include <netstring.h>
 #include <stddef.h>
 
 #ifdef __cplusplus
