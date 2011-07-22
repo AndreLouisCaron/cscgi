@@ -1,0 +1,3 @@
+[submodule "code/netstring"]
+	path = code/netstring
+	url = git://github.com/AndreLouisCaron/cnetstring.git
