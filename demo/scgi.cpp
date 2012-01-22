@@ -97,4 +97,4 @@ namespace scgi {
         request.myContent.append(data, size);
     }
 
-}
+}"
