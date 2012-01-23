@@ -6,10 +6,14 @@
 // "http://www.opensource.org/licenses/mit".
 
 #include "scgi.hpp"
+#include <iostream>
+#include <sstream>
 
 namespace scgi {
 
     Request::Request ()
+        : myState(Null),
+          myContentLength(0)
     {
         ::scgi_setup(&myLimits, &myParser);
         myParser.object = this;
@@ -23,6 +27,8 @@ namespace scgi {
     {
         myContent.clear();
         ::scgi_clear(&myParser);
+        myState = Null;
+        myContentLength = 0;
     }
 
     size_t Request::feed ( const char * data, size_t size )
@@ -63,6 +69,21 @@ namespace scgi {
         return (myContent);
     }
 
+    bool Request::head_complete () const
+    {
+        return (myState >= Body);
+    }
+
+    bool Request::body_complete () const
+    {
+        return (myState == Done);
+    }
+
+    std::size_t Request::body_size () const
+    {
+        return (myContentLength);
+    }
+
     void Request::accept_field
         ( ::scgi_parser* parser, const char * data, size_t size )
     {
@@ -88,13 +109,42 @@ namespace scgi {
         request.myHeaders[request.myField] = request.myValue;
         request.myField.clear();
         request.myValue.clear();
+        request.myState = Body;
+        // Pre-parse content length.
+        const std::string content_length = request.header("CONTENT_LENGTH");
+        if (content_length.empty()) {
+            request.myContentLength = 0;
+        }
+        else {
+            std::istringstream parser(content_length);
+            if (!(parser >> request.myContentLength)) {
+                // error.
+            }
+        }
     }
 
     void Request::accept_body
         ( ::scgi_parser* parser, const char * data, size_t size )
     {
         Request& request = *static_cast<Request*>(parser->object);
+        size = std::max
+            (size, request.myContentLength-request.myContent.size());
         request.myContent.append(data, size);
+        if (request.myContent.size() >= request.myContentLength) {
+            request.myState = Done;
+        }
     }
 
-}"
+    std::istream& operator>> ( std::istream& stream, Request& request )
+    {
+        request.clear();
+        char data[1024];
+        do {
+            stream.read(data, sizeof(data));
+            request.feed(data, stream.gcount());
+        }
+        while (!request.body_complete() && (stream.gcount() > 0));
+        return (stream);
+    }
+
+}

@@ -41,6 +41,12 @@ if(MSVC)
   )
 endif()
 
+enable_testing()
+
+# Put all libraries and executables in the build folder root.
+set(LIBRARY_OUTPUT_PATH    ${PROJECT_BINARY_DIR})
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
+
 # Build required libraries.
 add_submodule(cnetstring)
 
@@ -65,5 +71,8 @@ if(${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME})
 
   # Build demo projects.
   add_subdirectory(demo)
+
+  # Register unit tests.
+  add_subdirectory(test)
 
 endif()
