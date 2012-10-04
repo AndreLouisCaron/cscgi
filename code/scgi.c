@@ -136,7 +136,7 @@ size_t scgi_consume ( const struct scgi_limits * limits,
     }
     if ( parser->state == scgi_parser_body )
     {
-        parser->accept_body(parser, data+used, size-used);
+        used += parser->accept_body(parser, data+used, size-used);
     }
     return (used);
 }

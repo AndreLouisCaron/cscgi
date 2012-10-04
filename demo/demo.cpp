@@ -20,7 +20,7 @@ namespace {
         ","
         "What is the answer to life?"
         ;
-    const size_t SIZE = sizeof(DATA);
+    const size_t SIZE = sizeof(DATA) - 1;
 
     class Print
     {
@@ -50,6 +50,9 @@ int main ( int, char ** )
 try
 {
     scgi::Request parser;
+    std::cout
+        << "Size: '" << SIZE << "'."
+        << std::endl;
     std::cout
         << "Used: '" << parser.feed(DATA, SIZE) << "'."
         << std::endl;

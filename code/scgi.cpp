@@ -124,16 +124,17 @@ namespace scgi {
         }
     }
 
-    void Request::accept_body
+    size_t Request::accept_body
         ( ::scgi_parser* parser, const char * data, size_t size )
     {
         Request& request = *static_cast<Request*>(parser->object);
-        size = std::min
+        const size_t used = std::min
             (size, request.myContentLength-request.myContent.size());
-        request.myContent.append(data, size);
+        request.myContent.append(data, used);
         if (request.myContent.size() >= request.myContentLength) {
             request.myState = Done;
         }
+        return (used);
     }
 
     std::istream& operator>> ( std::istream& stream, Request& request )

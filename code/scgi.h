@@ -207,13 +207,15 @@ struct scgi_parser
        *  state (amount of parsed data, etc.) or accessing the @c object field.
        * @param data Pointer to first byte of data.
        * @param size Size of @a data, in bytes.
+       * @return The amount of data processed.  Will be less or equal to @a
+       *  size.
        *
        * The SCGI request parser does not buffer any data.  Rather, it calls the
        * callback with any consumed data as soon as it is made available by
        * client code.  This means that this callback may be invoked several
        * times for the same request body.
        */
-    void(*accept_body)(struct scgi_parser*, const char *, size_t);
+    size_t(*accept_body)(struct scgi_parser*, const char *, size_t);
 };
 
   /*!
