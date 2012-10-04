@@ -15,7 +15,7 @@ namespace scgi {
         : myState(Null),
           myContentLength(0)
     {
-        myLimits.max_head_size = 50;
+        myLimits.max_head_size = 0;
         myLimits.max_body_size = 0;
         ::scgi_setup(&myLimits, &myParser);
         myParser.object = this;
