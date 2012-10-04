@@ -75,14 +75,14 @@ static void scgi_finish_netstring
     scgi_finish_head((struct scgi_parser*)parser->object);
 }
 
-int scgi_head_overflow
+static int scgi_head_overflow
     ( const struct scgi_limits * limits, size_t parsed )
 {
     return (limits->maximum_head_length != 0)
         && (parsed > limits->maximum_head_length);
 }
 
-int scgi_body_overflow
+static int scgi_body_overflow
     ( const struct scgi_limits * limits, size_t parsed )
 {
     return (limits->maximum_body_length != 0)
