@@ -19,6 +19,7 @@ namespace scgi {
         myParser.object = this;
         myParser.accept_field = &Request::accept_field;
         myParser.accept_value = &Request::accept_value;
+        myParser.finish_value = &Request::finish_value;
         myParser.finish_head = &Request::finish_head;
         myParser.accept_body = &Request::accept_body;
     }
@@ -88,11 +89,6 @@ namespace scgi {
         ( ::scgi_parser* parser, const char * data, size_t size )
     {
         Request& request = *static_cast<Request*>(parser->object);
-        if ( !request.myValue.empty() ) {
-            request.myHeaders[request.myField] = request.myValue;
-            request.myField.clear();
-            request.myValue.clear();
-        }
         request.myField.append(data, size);
     }
 
@@ -103,12 +99,17 @@ namespace scgi {
         request.myValue.append(data, size);
     }
 
-    void Request::finish_head ( ::scgi_parser * parser )
+    void Request::finish_value ( ::scgi_parser * parser )
     {
         Request& request = *static_cast<Request*>(parser->object);
         request.myHeaders[request.myField] = request.myValue;
         request.myField.clear();
         request.myValue.clear();
+    }
+
+    void Request::finish_head ( ::scgi_parser * parser )
+    {
+        Request& request = *static_cast<Request*>(parser->object);
         request.myState = Body;
         // Pre-parse content length.
         const std::string content_length = request.header("CONTENT_LENGTH");

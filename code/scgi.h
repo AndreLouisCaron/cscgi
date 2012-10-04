@@ -146,8 +146,23 @@ struct scgi_parser
        * callback with any consumed data as soon as it is made available by
        * client code.  This means that this callback may be invoked several
        * times for the same header.
+       *
+       * @see finish_field
        */
     void(*accept_field)(struct scgi_parser*, const char *, size_t);
+
+      /*!
+       * @brief Informs the application that the header name is finished.
+       * @param parser The SCGI parser itself.  Useful for checking the parser
+       *  state (amount of parsed data, etc.) or accessing the @c object field.
+       *
+       * When all data has been passed to the @c accept_field callback, this
+       * callback is invoked to let the application know it can process the
+       * HTTP header name.
+       *
+       * @see accept_field
+       */
+    void(*finish_field)(struct scgi_parser*);
 
       /*!
        * @brief Callback supplying data for a header value.
@@ -160,8 +175,23 @@ struct scgi_parser
        * callback with any consumed data as soon as it is made available by
        * client code.  This means that this callback may be invoked several
        * times for the same header.
+       *
+       * @see finish_value
        */
     void(*accept_value)(struct scgi_parser*, const char *, size_t);
+
+      /*!
+       * @brief Informing the application that the header data is finished.
+       * @param parser The SCGI parser itself.  Useful for checking the parser
+       *  state (amount of parsed data, etc.) or accessing the @c object field.
+       *
+       * When all data has been passed to the @c accept_value callback, this
+       * callback is invoked to let the application know it can process the
+       * HTTP header data.
+       *
+       * @see accept_value
+       */
+    void(*finish_value)(struct scgi_parser*);
 
       /*!
        * @brief Callback indicating the end of SCGI headers.

@@ -43,6 +43,10 @@ static void scgi_accept_head
             if ((used < size) && (data[used] == '\0')) {
                 ++used;
                 parser->state = scgi_parser_value;
+                /* let the owner know they can stop buffering. */
+                if (parser->finish_field) {
+                    parser->finish_field(parser);
+                }
             }
         }
         if ( parser->state == scgi_parser_value )
@@ -53,6 +57,10 @@ static void scgi_accept_head
             if ((used < size) && (data[used] == '\0')) {
                 ++used;
                 parser->state = scgi_parser_field;
+                /* let the owner know they can stop buffering. */
+                if (parser->finish_value) {
+                    parser->finish_value(parser);
+                }
             }
         }
     }
@@ -102,6 +110,8 @@ void scgi_setup ( struct scgi_limits * limits, struct scgi_parser * parser )
       /* global parser setup. */
     parser->state = scgi_parser_field;
     parser->error = scgi_error_ok;
+    parser->finish_field = 0;
+    parser->finish_value = 0;
 }
 
 void scgi_clear ( struct scgi_parser * parser )

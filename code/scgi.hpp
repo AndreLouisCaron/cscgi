@@ -127,6 +127,7 @@ namespace scgi {
             ( ::scgi_parser* parser, const char * data, size_t size );
         static void accept_value
             ( ::scgi_parser* parser, const char * data, size_t size );
+        static void finish_value ( ::scgi_parser * parser );
         static void finish_head ( ::scgi_parser* parser );
         static void accept_body
             ( ::scgi_parser* parser, const char * data, size_t size );
