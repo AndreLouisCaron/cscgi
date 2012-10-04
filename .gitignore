@@ -1,6 +1,4 @@
 # git-ls-files --others --exclude-from=.git/info/exclude
+*~
+work/
 help/
-build/
-*.vcproj.*.user
-*.ncb
-*.suo
