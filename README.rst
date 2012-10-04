@@ -128,6 +128,9 @@ Embedded build
       set(cscgi_DIR
         ${CMAKE_SOURCE_DIR}/libs/cscgi
       )
+      set(cnetstring_DIR
+        ${CMAKE_SOURCE_DIR}/libs/cnetstring
+      )
 
 #. Make sure your CMake project can ``#include <scgi.h>``.
 
@@ -136,10 +139,14 @@ Embedded build
       include_directories(
         ${cscgi_include_dirs}
       )
+      include_directories(
+        ${cnestring_include_dirs}
+      )
 
 
 #. Link against the ``scgi`` library.
 
    ::
 
+      # Note: netstring library is included "${cscgi_libraries}".
       target_link_libraries(my-application ${cscgi_libraries})
