@@ -21,6 +21,26 @@
 
 namespace scgi {
 
+    class Error :
+        public std::exception
+    {
+        /* data. */
+    private:
+      ::scgi_parser_error myCode;
+
+        /* construction. */
+    public:
+        Error (::scgi_parser_error code)
+          : myCode(code)
+        {}
+
+        /* methods. */
+    public:
+        virtual const char * what () const throw() {
+            return (::scgi_error_message(myCode));
+        }
+    };
+
     /*!
      * @brief Representation of SCGI request headers.
      */

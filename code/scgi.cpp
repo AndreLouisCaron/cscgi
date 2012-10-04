@@ -38,11 +38,8 @@ namespace scgi {
     {
         const size_t used =
             ::scgi_consume(&myLimits, &myParser, data, size);
-        if ( myParser.error != scgi_error_ok )
-        {
-            const char * message =
-                ::scgi_error_message(myParser.error);
-            throw (std::exception(message));
+        if ( myParser.error != scgi_error_ok ) {
+            throw (Error(myParser.error));
         }
         return (used);
     }
