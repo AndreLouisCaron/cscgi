@@ -15,6 +15,8 @@ namespace scgi {
         : myState(Null),
           myContentLength(0)
     {
+        myLimits.max_head_size = 50;
+        myLimits.max_body_size = 0;
         ::scgi_setup(&myLimits, &myParser);
         myParser.object = this;
         myParser.accept_field = &Request::accept_field;
@@ -36,7 +38,7 @@ namespace scgi {
     {
         const size_t used =
             ::scgi_consume(&myLimits, &myParser, data, size);
-        if ( myParser.state == scgi_parser_fail )
+        if ( myParser.error != scgi_error_ok )
         {
             const char * message =
                 ::scgi_error_message(myParser.error);

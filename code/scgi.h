@@ -41,20 +41,20 @@ const char * scgi_error_message ( enum scgi_parser_error error );
    */
 enum scgi_parser_state
 {
+
       /*! @private
        */
     scgi_parser_field,
+
       /*! @private
        */
     scgi_parser_value,
+
       /*!
+       * @private
        * @brief Headers have been completely parsed.
        */
     scgi_parser_body,
-      /*!
-       * @brief An error was detected.  Check the parser's @a error field.
-       */
-    scgi_parser_fail,
 };
 
   /*!
@@ -67,7 +67,7 @@ struct scgi_limits
        *
        * @note This limit excludes the two characters used as delimiters.
        */
-    size_t maximum_head_length;
+    size_t max_head_size;
 
       /*!
        * @brief Maximum admissible of the request body.
@@ -79,7 +79,7 @@ struct scgi_limits
        *  specified in the content header with the amount of data provided
        *  through the @c accept_body callback.
        */
-    size_t maximum_body_length;
+    size_t max_body_size;
 };
 
   /*!
@@ -110,8 +110,7 @@ struct scgi_parser
       /*! @public
        * @brief Last error reported by the parser.
        *
-       * @warning This field should only be interpreted if @c state is set to
-       *  @c scgi_parser_fail.  Its value is undefined at all other times.
+       * You should check this after each call to @c scgi_consume().
        */
     enum scgi_parser_error error;
 
@@ -119,6 +118,8 @@ struct scgi_parser
        * @brief Internal sub-parser for the netstring containing the headers.
        */
     struct netstring_limits header_limits;
+
+    struct scgi_limits limits;
 
       /*! @private
        * @brief Internal sub-parser for the netstring containing the headers.
@@ -134,6 +135,8 @@ struct scgi_parser
        * registered callbacks.
        */
     void * object;
+
+    size_t body_size;
 
       /*!
        * @brief Callback supplying data for a header field name.
@@ -240,9 +243,10 @@ void scgi_clear ( struct scgi_parser * parser );
    *  @a size.  However, the parser may choose to interrupt parser early or stop
    *  processing data because of an error.
    *
-   * You should @e always check the parser state after a call to this method.
-   * In particular, all data may be consumed before an error is reported, so
-   * a return value equal to @a size is not a reliable indicator of success.
+   * You should @e always check the parser's @c error field after a call to
+   * this method.  In particular, all data may be consumed before an error is
+   * reported, so a return value equal to @a size is not a reliable indicator
+   * of success.
    */
 size_t scgi_consume ( const struct scgi_limits * limits,
     struct scgi_parser * parser, const char * data, size_t size );

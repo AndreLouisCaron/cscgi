@@ -7,11 +7,16 @@
 
 #include "scgi.h"
 
+static size_t scgi_min ( size_t lhs, size_t rhs )
+{
+    return ((lhs < rhs)? lhs : rhs);
+}
+
 static const char * scgi_error_messages[] =
 {
     "so far, so good",
-    "string too long",
-    "expected digit",
+    "request head too long",
+    "request body too long",
 };
 
 const char * scgi_error_message ( enum scgi_parser_error error )
@@ -33,7 +38,7 @@ static void scgi_accept_head
 {
     size_t used = 0;
     size_t peek = 0;
-    while ((used < size) && (parser->state != scgi_parser_fail))
+    while ((used < size) && (parser->error == scgi_error_ok))
     {
         if ( parser->state == scgi_parser_field )
         {
@@ -84,32 +89,34 @@ static void scgi_finish_netstring
 }
 
 static int scgi_head_overflow
-    ( const struct scgi_limits * limits, size_t parsed )
+    ( const struct scgi_limits * limits, size_t size )
 {
-    return (limits->maximum_head_length != 0)
-        && (parsed > limits->maximum_head_length);
+    return (limits->max_head_size != 0)
+        && (size > limits->max_head_size);
 }
 
 static int scgi_body_overflow
-    ( const struct scgi_limits * limits, size_t parsed )
+    ( const struct scgi_limits * limits, size_t size )
 {
-    return (limits->maximum_body_length != 0)
-        && (parsed > limits->maximum_body_length);
+    return (limits->max_body_size != 0)
+        && (size > limits->max_body_size);
 }
 
 void scgi_setup ( struct scgi_limits * limits, struct scgi_parser * parser )
 {
-    limits->maximum_head_length = 0;
-    limits->maximum_body_length = 0;
       /* nestring parser setup. */
-    parser->header_limits.maximum_length = limits->maximum_head_length;
+    parser->header_limits.maximum_length = limits->max_head_size;
     netstring_setup(&parser->header_limits, &parser->header_parser);
     parser->header_parser.accept = &scgi_accept_netstring;
     parser->header_parser.finish = &scgi_finish_netstring;
     parser->header_parser.object = parser;
+      /* store limits. */
+    parser->limits.max_head_size = limits->max_head_size;
+    parser->limits.max_body_size = limits->max_body_size;
       /* global parser setup. */
     parser->state = scgi_parser_field;
     parser->error = scgi_error_ok;
+    parser->body_size = 0;
     parser->finish_field = 0;
     parser->finish_value = 0;
 }
@@ -124,11 +131,23 @@ size_t scgi_consume ( const struct scgi_limits * limits,
     struct scgi_parser * parser, const char * data, size_t size )
 {
     size_t used = 0;
+    size_t pass = 0;
     if ((parser->state == scgi_parser_field) ||
         (parser->state == scgi_parser_value))
     {
         used = netstring_consume(&parser->header_limits,
             &parser->header_parser, data, size);
+        if ( parser->header_parser.error != netstring_error_ok )
+        {
+            /* translate netstring errors. */
+            if ( parser->header_parser.error == netstring_error_overflow ) {
+                parser->error = scgi_error_head_overflow;
+            }
+            if ( parser->header_parser.error == netstring_error_nondigit ) {
+                /* TODO: handle this. */
+            }
+            return (used);
+        }
         if ( parser->header_parser.state == netstring_parser_done )
         {
             parser->state = scgi_parser_body;
@@ -136,7 +155,25 @@ size_t scgi_consume ( const struct scgi_limits * limits,
     }
     if ( parser->state == scgi_parser_body )
     {
-        used += parser->accept_body(parser, data+used, size-used);
+        /* grab as much data as we possibly can without exceeding limits. */
+        pass = size-used;
+        if (parser->limits.max_body_size > 0) {
+            pass = scgi_min(pass,
+                            parser->limits.max_body_size-parser->body_size);
+        }
+        /* try to consume the chunk. */
+        pass = parser->accept_body(parser, data+used, pass);
+        used += pass, parser->body_size += pass;
+        /* overflow if:
+           - there is data left to consume; and
+           - we have an upper bound on the body size; and
+           - the total amount consumed exceeds the upper bound.
+         */
+        if (((size-used) > 0) && (parser->limits.max_body_size > 0)
+            && (parser->body_size == parser->limits.max_body_size))
+        {
+            parser->error = scgi_error_body_overflow;
+        }
     }
     return (used);
 }
