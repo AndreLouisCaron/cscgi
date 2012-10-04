@@ -60,8 +60,8 @@ Standalone build
 
       > git clone git://github.com/AndreLouisCaron/cscgi.git
       > cd cscgi
-
-   Feel free to check out a specific version
+      > git submodule init
+      > git submodule update free to check out a specific version
 
    ::
 
@@ -101,12 +101,13 @@ Standalone build
 Embedded build
 --------------
 
-#. Register as a Git sub-module.
+#. Register ``cscgi`` and its dependency as Git sub-modules.
 
    ::
 
       > cd myproject
       > git submodule add git://github.com/AndreLouisCaron/cscgi.git libs/cscgi
+      > git submodule add git://github.com/AndreLouisCaron/cnetstring.git libs/cnetstring
 
    Feel free to check out a specific version.
 
