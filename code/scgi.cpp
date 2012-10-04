@@ -128,7 +128,7 @@ namespace scgi {
         ( ::scgi_parser* parser, const char * data, size_t size )
     {
         Request& request = *static_cast<Request*>(parser->object);
-        size = std::max
+        size = std::min
             (size, request.myContentLength-request.myContent.size());
         request.myContent.append(data, size);
         if (request.myContent.size() >= request.myContentLength) {
