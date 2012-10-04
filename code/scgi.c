@@ -15,6 +15,7 @@ static size_t scgi_min ( size_t lhs, size_t rhs )
 static const char * scgi_error_messages[] =
 {
     "so far, so good",
+    "bad request head syntax",
     "request head too long",
     "request body too long",
 };
@@ -105,7 +106,7 @@ static int scgi_body_overflow
 void scgi_setup ( struct scgi_limits * limits, struct scgi_parser * parser )
 {
       /* nestring parser setup. */
-    parser->header_limits.maximum_length = limits->max_head_size;
+    parser->header_limits.max_size = limits->max_head_size;
     netstring_setup(&parser->header_limits, &parser->header_parser);
     parser->header_parser.accept = &scgi_accept_netstring;
     parser->header_parser.finish = &scgi_finish_netstring;
@@ -143,7 +144,7 @@ size_t scgi_consume ( const struct scgi_limits * limits,
             if ( parser->header_parser.error == netstring_error_overflow ) {
                 parser->error = scgi_error_head_overflow;
             }
-            if ( parser->header_parser.error == netstring_error_nondigit ) {
+            if ( parser->header_parser.error == netstring_error_syntax ) {
                 /* TODO: handle this. */
             }
             return (used);

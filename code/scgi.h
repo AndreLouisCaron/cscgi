@@ -27,6 +27,7 @@ extern "C" {
 enum scgi_parser_error
 {
     scgi_error_ok=0,
+    scgi_error_head_syntax,
     scgi_error_head_overflow,
     scgi_error_body_overflow,
 };
