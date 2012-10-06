@@ -178,7 +178,7 @@ static void read_cb (struct bufferevent * stream, void * context)
     if (connection->parser.error != scgi_error_ok)
     {
         // Log the error.
-        fprintf(stderr, "SCGI request error: \"%s\".",
+        fprintf(stderr, "SCGI request error: \"%s\".\n",
                 scgi_error_message(connection->parser.error));
 
         // Drop connection.
