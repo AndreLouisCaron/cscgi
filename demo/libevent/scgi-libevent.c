@@ -154,7 +154,20 @@ static void read_cb (struct bufferevent * stream, void * context)
     struct evbuffer * input = bufferevent_get_input(stream);
     size_t size = evbuffer_get_length(input);
     char * data = malloc(size);
-    evbuffer_copyout(input, data, size);
+    if (evbuffer_remove(input, data, size) == -1)
+    {
+        // Log the error.
+        fprintf(stderr, "could not read data from the buffer\n");
+
+        // Drop connection.
+        release_connection(connection);
+
+        // Release our copy of the input data.
+        free(data), data = 0;
+
+        // Exit
+        return;
+    }
  
     // Feed the input data to the SCGI request parser.
     //   All actual processing is done inside the SCGI callbacks
@@ -180,7 +193,10 @@ static void write_cb (struct bufferevent * stream, void * context)
 {
     struct connection_t * connection = context;
     struct evbuffer * output = bufferevent_get_output(stream);
-    if (evbuffer_get_length(output) == 0) {
+    struct evbuffer * input  = bufferevent_get_input(stream);
+
+    if (evbuffer_get_length(output) == 0 &&
+        evbuffer_get_length(input) == 0) {
         release_connection(connection);
     }
 }
