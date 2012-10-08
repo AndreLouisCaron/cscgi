@@ -1,4 +1,4 @@
-// Copyright (C) 2011 by Andre Caron (andre.l.caron@gmail.com)
+// Copyright (C) 2012 by Luka Perkov (freeacs-ng@lukaperkov.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -17,6 +17,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+// This file includes modifications to the original contribution by Luka
+// Perkov.  The current maintainer is Andre Caron (andre.l.caron@gmail.com).
 
 #include <arpa/inet.h>
 #include <errno.h>
