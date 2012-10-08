@@ -6,6 +6,9 @@ cmake_minimum_required(VERSION 2.6)
 
 project(cscgi)
 
+option(CSCGI_BUILD_DEMOS "Build demo programs." ON)
+option(CSCGI_BUILD_TESTS "Build test programs." ON)
+
 # Add targets for library referenced as Git submodule.
 macro(add_submodule name)
   if(${ARGN1})
@@ -75,9 +78,13 @@ if(${PROJECT_NAME} STREQUAL ${CMAKE_PROJECT_NAME})
   )
 
   # Build demo projects.
-  add_subdirectory(demo)
+  if(CSCGI_BUILD_DEMOS)
+    add_subdirectory(demo)
+  endif()
 
   # Register unit tests.
-  add_subdirectory(test)
+  if(CSCGI_BUILD_TESTS)
+    add_subdirectory(test)
+  endif()
 
 endif()
