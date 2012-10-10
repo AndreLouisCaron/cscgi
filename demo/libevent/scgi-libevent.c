@@ -133,7 +133,7 @@ static void finish_head (struct scgi_parser * parser)
         "\r\n"
         "hello world\n"
         ;
-    evbuffer_add_printf(output, response);
+    evbuffer_add(output, response, sizeof(response)-1);
 }
 
 static size_t accept_body (struct scgi_parser * parser,
