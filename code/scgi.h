@@ -144,6 +144,20 @@ struct scgi_parser
        */
     void * object;
 
+      /*!
+       * @public
+       * @brief Size of body processed so far, in bytes.
+       *
+       * This field is updated automatically and should be considered read-only
+       * by applications and their callbacks.
+       *
+       * @warning In a call to @c accept_body(), the size of the body processed
+       *  so far does not include the @c size argument passed in the call to @c
+       *  accept_body().  The reason is that the callback may choose not to
+       *  process all data and the value can only be updated after the call
+       *  completes (e.g. the @c body_size value actually is equal to the sum
+       *  of the return values of the @c accept_body() callback).
+       */
     size_t body_size;
 
       /*!
