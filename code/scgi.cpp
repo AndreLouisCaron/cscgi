@@ -101,6 +101,26 @@ namespace scgi {
     void Request::finish_value ( ::scgi_parser * parser )
     {
         Request& request = *static_cast<Request*>(parser->object);
+        // Pre-parse content length.
+        if (::scgi_is_content_length(request.myField.data(),
+                                     request.myField.size()))
+        {
+            if (request.myContentLength != 0) {
+                // TODO: Reject multiple definitions.
+                std::cerr << "Multiple content lengths." << std::endl;
+            }
+            const ::ssize_t content_length =
+                ::scgi_parse_content_length(request.myValue.data(),
+                                            request.myValue.size());
+            if (content_length < 0) {
+                // TODO: Reject invalid values.
+                std::cerr << "Invalid content length." << std::endl;
+            }
+            else {
+                request.myContentLength = content_length;
+            }
+        }
+        // Consume header value.
         request.myHeaders[request.myField] = request.myValue;
         request.myField.clear();
         request.myValue.clear();
@@ -110,17 +130,6 @@ namespace scgi {
     {
         Request& request = *static_cast<Request*>(parser->object);
         request.myState = Body;
-        // Pre-parse content length.
-        const std::string content_length = request.header("CONTENT_LENGTH");
-        if (content_length.empty()) {
-            request.myContentLength = 0;
-        }
-        else {
-            std::istringstream parser(content_length);
-            if (!(parser >> request.myContentLength)) {
-                // error.
-            }
-        }
     }
 
     size_t Request::accept_body

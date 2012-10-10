@@ -6,6 +6,8 @@
 ** "http://www.opensource.org/licenses/mit". */
 
 #include "scgi.h"
+#include <ctype.h>
+#include <string.h>
 
 static size_t scgi_min ( size_t lhs, size_t rhs )
 {
@@ -177,4 +179,22 @@ size_t scgi_consume ( const struct scgi_limits * limits,
         }
     }
     return (used);
+}
+
+int scgi_is_content_length (const char * data, size_t size)
+{
+    return (strncmp("CONTENT_LENGTH", data, size) == 0);
+}
+
+ssize_t scgi_parse_content_length (const char * data, size_t size)
+{
+    size_t used = 0;
+    ssize_t content_length = 0;
+    while ((used < size) && isdigit(data[used])) {
+        content_length *= 10, content_length += (data[used++]-'0');
+    }
+    if (used < size) {
+        return (-1);
+    }
+    return (content_length);
 }

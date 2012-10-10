@@ -21,6 +21,13 @@
 extern "C" {
 #endif
 
+// Taken from <BaseTsd.h>
+#if defined(_WIN64)
+typedef __int64 ssize_t;
+#elif defined(_WIN32)
+typedef __int32 ssize_t;
+#endif
+
   /*!
    * @brief Enumeration of error states the parser may report.
    */
@@ -251,6 +258,29 @@ void scgi_clear ( struct scgi_parser * parser );
    */
 size_t scgi_consume ( const struct scgi_limits * limits,
     struct scgi_parser * parser, const char * data, size_t size );
+
+/*!
+ * @brief Check an HTTP header's name for the @c Content-Length header value.
+ * @param data Buffered header name data.
+ * @param size Buffered header name size.
+ * @return 0 if the header name does not match, else non-zero.
+ *
+ * This function should be used in the @c finish_value() callback to check the
+ * data buffered by one or more calls to @c accept_field() and @c
+ * accept_value().
+ */
+int scgi_is_content_length (const char * data, size_t size);
+
+/*!
+ * @brief Parse the HTTP @c Content-Length header value.
+ * @param data Buffered header value data.
+ * @param size Buffered header value size.
+ * @return -1 if the header value is not a non-negative integer, else the size
+ *  of the HTTP request body in bytes.
+ *
+ * You typically use this once @c scgi_is_content_length() returns non-zero.
+ */
+ssize_t scgi_parse_content_length (const char * data, size_t size);
 
 #ifdef __cplusplus
 }
