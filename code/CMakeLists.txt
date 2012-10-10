@@ -2,12 +2,22 @@
 
 set(scgi_headers
   scgi.h
-  scgi.hpp
 )
 set(scgi_sources
   scgi.c
-  scgi.cpp
 )
+
+if(CSCGI_BUILD_CXX)
+  set(scgi_headers
+    ${scgi_headers}
+    scgi.hpp
+  )
+  set(scgi_sources
+    ${scgi_sources}
+    scgi.cpp
+  )
+endif()
+
 add_library(scgi
   STATIC
   ${scgi_sources}

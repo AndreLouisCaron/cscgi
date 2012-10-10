@@ -80,6 +80,7 @@ Standalone build
 
    The following CMake options are supported:
 
+   #. ``CSCGI_BUILD_CXX``: build C++ wrappers.
    #. ``CSCGI_BUILD_DEMOS``: build demo programs.
    #. ``CSCGI_BUILD_TESTS``: build test programs.
 
@@ -93,6 +94,9 @@ Standalone build
    ::
 
       > cmake -G "NMake Makefiles" .. -DCSCGI_BUILD_DEMOS=OFF
+
+   Note that ``CSCGI_BUILD_CXX`` must be set to ``ON`` to build the demos and
+   tests (they're based on the C++ wrappers).
 
 #. Build the source code.
 

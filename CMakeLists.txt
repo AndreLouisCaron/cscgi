@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project(cscgi)
 
+option(CSCGI_BUILD_CXX "Build C++ wrappers." ON)
 option(CSCGI_BUILD_DEMOS "Build demo programs." ON)
 option(CSCGI_BUILD_TESTS "Build test programs." ON)
 
