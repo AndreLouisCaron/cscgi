@@ -83,6 +83,7 @@ Standalone build
    #. ``CSCGI_BUILD_CXX``: build C++ wrappers.
    #. ``CSCGI_BUILD_DEMOS``: build demo programs.
    #. ``CSCGI_BUILD_TESTS``: build test programs.
+   #. ``CSCGI_SHARED_LIBS``: build ``cscgi`` as a shared library (DLL).
 
    All options are set to ``ON`` by default in the standalone builds.  Options
    for demos and tests are ignored and forced to ``OFF`` when build as a

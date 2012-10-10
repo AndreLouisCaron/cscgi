@@ -9,6 +9,7 @@ project(cscgi)
 option(CSCGI_BUILD_CXX "Build C++ wrappers." ON)
 option(CSCGI_BUILD_DEMOS "Build demo programs." ON)
 option(CSCGI_BUILD_TESTS "Build test programs." ON)
+option(CSCGI_SHARED_LIBS "Build cscgi shared library." OFF)
 
 # Add targets for library referenced as Git submodule.
 macro(add_submodule name)

@@ -18,8 +18,17 @@ if(CSCGI_BUILD_CXX)
   )
 endif()
 
-add_library(scgi
-  STATIC
-  ${scgi_sources}
-  ${scgi_headers}
-)
+if(CSCGI_SHARED_LIBS)
+  add_library(scgi
+    SHARED
+    ${scgi_sources}
+    ${scgi_headers}
+  )
+  target_link_libraries(scgi ${cnetstring_libraries})
+else()
+  add_library(scgi
+    STATIC
+    ${scgi_sources}
+    ${scgi_headers}
+  )
+endif()
