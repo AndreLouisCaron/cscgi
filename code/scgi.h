@@ -21,11 +21,13 @@
 extern "C" {
 #endif
 
-// Taken from <BaseTsd.h>
+// MSVC doesn't have <sys/types.h> but has something similar in <BaseTsd.h>.
 #if defined(_WIN64)
 typedef __int64 ssize_t;
 #elif defined(_WIN32)
 typedef __int32 ssize_t;
+#else
+ #include <sys/types.h>
 #endif
 
   /*!
