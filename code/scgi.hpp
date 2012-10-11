@@ -1,16 +1,28 @@
 #ifndef _scgi_hpp__
 #define _scgi_hpp__
 
-// Copyright(c) Andre Caron <andre.l.caron@gmail.com>, 2011
+// Copyright (c) 2011-2012, Andre Caron (andre.l.caron@gmail.com)
 //
-// This document is covered by the an Open Source Initiative approved license. A
-// copy of the license should have been provided alongside this software package
-// (see "LICENSE.txt"). If not, terms of the license are available online at
-// "http://www.opensource.org/licenses/mit".
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 /*!
- * @file scgi.hpp
- * @author Andre Caron <andre.l.caron@gmail.com>
+ * @file
  * @brief Parser for Simple Common Gateway Interface (SCGI) requests.
  */
 
@@ -105,7 +117,7 @@ namespace scgi {
          * This is an important property for high-performance networking
          * applications.
          */
-        size_t feed ( const char * data, size_t size );
+        size_t feed (const char * data, size_t size);
 
         /*!
          * @brief Get the all headers defined in the request.
@@ -120,7 +132,7 @@ namespace scgi {
          * @return @c true if the header is defined and non-empty, @c false
          *  otherwise.
          */
-        bool hasheader ( const std::string& field ) const;
+        bool hasheader (const std::string& field) const;
 
         /*!
          * @brief Lookup a specific header's value.
@@ -128,7 +140,7 @@ namespace scgi {
          * @return An empty string if the header is not defined or empty,
          *  the header's value otherwise.
          */
-        const std::string header ( const std::string& field ) const;
+        const std::string header (const std::string& field) const;
 
         /*!
          * @brief Access the parsed request body.
@@ -144,16 +156,16 @@ namespace scgi {
         /* class methods. */
     private:
         static void accept_field
-            ( ::scgi_parser* parser, const char * data, size_t size );
+            (::scgi_parser* parser, const char * data, size_t size);
         static void accept_value
-            ( ::scgi_parser* parser, const char * data, size_t size );
-        static void finish_value ( ::scgi_parser * parser );
-        static void finish_head ( ::scgi_parser* parser );
+            (::scgi_parser* parser, const char * data, size_t size);
+        static void finish_value (::scgi_parser * parser);
+        static void finish_head (::scgi_parser* parser);
         static size_t accept_body
-            ( ::scgi_parser* parser, const char * data, size_t size );
+            (::scgi_parser* parser, const char * data, size_t size);
     };
 
-    std::istream& operator>> ( std::istream& stream, Request& request );
+    std::istream& operator>> (std::istream& stream, Request& request);
 
 }
 

@@ -1,9 +1,28 @@
-// Copyright(c) Andre Caron <andre.l.caron@gmail.com>, 2011
+// Copyright (c) 2011-2012, Andre Caron (andre.l.caron@gmail.com)
 //
-// This document is covered by the an Open Source Initiative approved license. A
-// copy of the license should have been provided alongside this software package
-// (see "LICENSE.txt"). If not, terms of the license are available online at
-// "http://www.opensource.org/licenses/mit".
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+/*!
+ * @internal
+ * @file
+ * @brief Parser for Simple Common Gateway Interface (SCGI) requests.
+ */
 
 #include "scgi.hpp"
 #include <iostream>
@@ -34,11 +53,11 @@ namespace scgi {
         myContentLength = 0;
     }
 
-    size_t Request::feed ( const char * data, size_t size )
+    size_t Request::feed (const char * data, size_t size)
     {
         const size_t used =
             ::scgi_consume(&myParser, data, size);
-        if ( myParser.error != scgi_error_ok ) {
+        if (myParser.error != scgi_error_ok) {
             throw (Error(myParser.error));
         }
         return (used);
@@ -49,16 +68,16 @@ namespace scgi {
         return (myHeaders);
     }
 
-    bool Request::hasheader ( const std::string& field ) const
+    bool Request::hasheader (const std::string& field) const
     {
         const Headers::const_iterator match = myHeaders.find(field);
         return ((match != myHeaders.end()) && !match->second.empty());
     }
 
-    const std::string Request::header ( const std::string& field ) const
+    const std::string Request::header (const std::string& field) const
     {
         const Headers::const_iterator match = myHeaders.find(field);
-        if ( match == myHeaders.end() ) {
+        if (match == myHeaders.end()) {
             return ("");
         }
         return (match->second);
@@ -85,20 +104,20 @@ namespace scgi {
     }
 
     void Request::accept_field
-        ( ::scgi_parser* parser, const char * data, size_t size )
+        (::scgi_parser* parser, const char * data, size_t size)
     {
         Request& request = *static_cast<Request*>(parser->object);
         request.myField.append(data, size);
     }
 
     void Request::accept_value
-        ( ::scgi_parser* parser, const char * data, size_t size )
+        (::scgi_parser* parser, const char * data, size_t size)
     {
         Request& request = *static_cast<Request*>(parser->object);
         request.myValue.append(data, size);
     }
 
-    void Request::finish_value ( ::scgi_parser * parser )
+    void Request::finish_value (::scgi_parser * parser)
     {
         Request& request = *static_cast<Request*>(parser->object);
         // Pre-parse content length.
@@ -126,14 +145,14 @@ namespace scgi {
         request.myValue.clear();
     }
 
-    void Request::finish_head ( ::scgi_parser * parser )
+    void Request::finish_head (::scgi_parser * parser)
     {
         Request& request = *static_cast<Request*>(parser->object);
         request.myState = Body;
     }
 
     size_t Request::accept_body
-        ( ::scgi_parser* parser, const char * data, size_t size )
+        (::scgi_parser* parser, const char * data, size_t size)
     {
         Request& request = *static_cast<Request*>(parser->object);
         const size_t used = std::min
@@ -145,7 +164,7 @@ namespace scgi {
         return (used);
     }
 
-    std::istream& operator>> ( std::istream& stream, Request& request )
+    std::istream& operator>> (std::istream& stream, Request& request)
     {
         request.clear();
         char data[1024];

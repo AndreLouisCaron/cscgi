@@ -1,15 +1,35 @@
-/* Copyright(c) Andre Caron <andre.l.caron@gmail.com>, 2011
+/* Copyright (c) 2011-2012, Andre Caron (andre.l.caron@gmail.com)
 **
-** This document is covered by the an Open Source Initiative approved license. A
-** copy of the license should have been provided alongside this software package
-** (see "LICENSE.txt"). If not, terms of the license are available online at
-** "http://www.opensource.org/licenses/mit". */
+** Permission is hereby granted, free of charge, to any person obtaining a copy
+** of this software and associated documentation files (the "Software"), to deal
+** in the Software without restriction, including without limitation the rights
+** to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+** copies of the Software, and to permit persons to whom the Software is
+** furnished to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in
+** all copies or substantial portions of the Software.
+**
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+** AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+** LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+** OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+** THE SOFTWARE.
+*/
+
+/*!
+ * @internal
+ * @file
+ * @brief Parser for Simple Common Gateway Interface (SCGI) requests.
+ */
 
 #include "scgi.h"
 #include <ctype.h>
 #include <string.h>
 
-static size_t scgi_min ( size_t lhs, size_t rhs )
+static size_t scgi_min (size_t lhs, size_t rhs)
 {
     return ((lhs < rhs)? lhs : rhs);
 }
@@ -22,12 +42,12 @@ static const char * scgi_error_messages[] =
     "request body too long",
 };
 
-const char * scgi_error_message ( enum scgi_parser_error error )
+const char * scgi_error_message (enum scgi_parser_error error)
 {
     return (scgi_error_messages[error]);
 }
 
-static size_t scgi_seek ( const char * data, size_t size )
+static size_t scgi_seek (const char * data, size_t size)
 {
     size_t peek = 0;
     while ((peek < size) && (data[peek] != '\0')) {
@@ -37,13 +57,13 @@ static size_t scgi_seek ( const char * data, size_t size )
 }
 
 static void scgi_accept_head
-    ( struct scgi_parser * parser, const char * data, size_t size )
+    (struct scgi_parser * parser, const char * data, size_t size)
 {
     size_t used = 0;
     size_t peek = 0;
     while ((used < size) && (parser->error == scgi_error_ok))
     {
-        if ( parser->state == scgi_parser_field )
+        if (parser->state == scgi_parser_field)
         {
             peek = scgi_seek(data+used, size-used);
             parser->accept_field(parser, data+used, peek);
@@ -57,7 +77,7 @@ static void scgi_accept_head
                 }
             }
         }
-        if ( parser->state == scgi_parser_value )
+        if (parser->state == scgi_parser_value)
         {
             peek = scgi_seek(data+used, size-used);
             parser->accept_value(parser, data+used, peek);
@@ -74,38 +94,38 @@ static void scgi_accept_head
     }
 }
 
-static void scgi_finish_head ( struct scgi_parser * parser )
+static void scgi_finish_head (struct scgi_parser * parser)
 {
     parser->finish_head(parser);
 }
 
 static void scgi_accept_netstring
-    ( struct netstring_parser * parser, const char * data, size_t size )
+    (struct netstring_parser * parser, const char * data, size_t size)
 {
     scgi_accept_head((struct scgi_parser*)parser->object, data, size);
 }
 
 static void scgi_finish_netstring
-    ( struct netstring_parser * parser )
+    (struct netstring_parser * parser)
 {
     scgi_finish_head((struct scgi_parser*)parser->object);
 }
 
 static int scgi_head_overflow
-    ( const struct scgi_limits * limits, size_t size )
+    (const struct scgi_limits * limits, size_t size)
 {
     return (limits->max_head_size != 0)
         && (size > limits->max_head_size);
 }
 
 static int scgi_body_overflow
-    ( const struct scgi_limits * limits, size_t size )
+    (const struct scgi_limits * limits, size_t size)
 {
     return (limits->max_body_size != 0)
         && (size > limits->max_body_size);
 }
 
-void scgi_setup ( struct scgi_limits * limits, struct scgi_parser * parser )
+void scgi_setup (struct scgi_limits * limits, struct scgi_parser * parser)
 {
       /* nestring parser setup. */
     parser->header_limits.max_size = limits->max_head_size;
@@ -124,7 +144,7 @@ void scgi_setup ( struct scgi_limits * limits, struct scgi_parser * parser )
     parser->finish_value = 0;
 }
 
-void scgi_clear ( struct scgi_parser * parser )
+void scgi_clear (struct scgi_parser * parser)
 {
     parser->state = scgi_parser_field;
     parser->error = scgi_error_ok;
@@ -140,23 +160,23 @@ size_t scgi_consume (struct scgi_parser * parser,
     {
         used = netstring_consume(&parser->header_limits,
             &parser->header_parser, data, size);
-        if ( parser->header_parser.error != netstring_error_ok )
+        if (parser->header_parser.error != netstring_error_ok)
         {
             /* translate netstring errors. */
-            if ( parser->header_parser.error == netstring_error_overflow ) {
+            if (parser->header_parser.error == netstring_error_overflow) {
                 parser->error = scgi_error_head_overflow;
             }
-            if ( parser->header_parser.error == netstring_error_syntax ) {
+            if (parser->header_parser.error == netstring_error_syntax) {
                 /* TODO: handle this. */
             }
             return (used);
         }
-        if ( parser->header_parser.state == netstring_parser_done )
+        if (parser->header_parser.state == netstring_parser_done)
         {
             parser->state = scgi_parser_body;
         }
     }
-    if ( parser->state == scgi_parser_body )
+    if (parser->state == scgi_parser_body)
     {
         /* grab as much data as we possibly can without exceeding limits. */
         pass = size-used;
