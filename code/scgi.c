@@ -130,8 +130,8 @@ void scgi_clear ( struct scgi_parser * parser )
     parser->error = scgi_error_ok;
 }
 
-size_t scgi_consume ( const struct scgi_limits * limits,
-    struct scgi_parser * parser, const char * data, size_t size )
+size_t scgi_consume (struct scgi_parser * parser,
+                     const char * data, size_t size)
 {
     size_t used = 0;
     size_t pass = 0;

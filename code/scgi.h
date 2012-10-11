@@ -272,8 +272,8 @@ void scgi_clear ( struct scgi_parser * parser );
    * reported, so a return value equal to @a size is not a reliable indicator
    * of success.
    */
-size_t scgi_consume ( const struct scgi_limits * limits,
-    struct scgi_parser * parser, const char * data, size_t size );
+size_t scgi_consume (struct scgi_parser * parser,
+                     const char * data, size_t size);
 
 /*!
  * @brief Check an HTTP header's name for the @c Content-Length header value.

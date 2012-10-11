@@ -37,7 +37,7 @@ namespace scgi {
     size_t Request::feed ( const char * data, size_t size )
     {
         const size_t used =
-            ::scgi_consume(&myLimits, &myParser, data, size);
+            ::scgi_consume(&myParser, data, size);
         if ( myParser.error != scgi_error_ok ) {
             throw (Error(myParser.error));
         }
