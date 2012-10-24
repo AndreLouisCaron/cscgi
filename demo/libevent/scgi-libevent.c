@@ -33,7 +33,6 @@
 struct connection_t
 {
     // SCGI request parser.
-    struct scgi_limits limits;
     struct scgi_parser parser;
 
     // libevent data stream (socket).
@@ -170,8 +169,7 @@ static void read_cb (struct bufferevent * stream, void * context)
     //   All actual processing is done inside the SCGI callbacks
     //   registered by our application.  Callbacks are always
     //   invoked by a call to "scgi_consume()".
-    size_t used = scgi_consume(&connection->limits,
-                               &connection->parser, data, size);
+    size_t used = scgi_consume(&connection->parser, data, size);
     if (connection->parser.error != scgi_error_ok)
     {
         // Log the error.
