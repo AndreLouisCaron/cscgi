@@ -19,7 +19,7 @@ if(NOT DEFINED cscgi_FOUND)
   include(FindPackageHandleStandardArgs)
   find_package_handle_standard_args(
     cscgi DEFAULT_MSG
-    cscgi_include_dir
+    cscgi_include_dirs
     cscgi_libraries
   )
 
